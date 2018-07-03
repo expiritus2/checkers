@@ -13,7 +13,7 @@ Player.prototype.initCheckers = function () {
 
     for (var i = 0; i < player.board.cells; i++) {
         for (var j = 0; j < player.board.rows; j++) {
-            if((i + j) % 2 === 0 && (i + j) / 2 <= player.countCheckers){
+            if((i + j) % 2 !== 0 && i < 3){
                 if (player.color === '#ffffff') {
                     var checker = new Checker(player.color, (j * player.board.cellWidth), (i * player.board.cellHeight), player.board.cellWidth, player.canvas);
                     player.checkers.push(checker);
