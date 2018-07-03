@@ -1,46 +1,57 @@
 var INITIAL = 1;
 var GAME_OVER = 2;
 
-function Checkers(canvas) {
-    var checkers = this;
+function Game(canvas) {
+    var game = this;
 
-    checkers.canvas = canvas;
-    checkers.ctx = checkers.canvas.getContext("2d");
+    game.canvas = canvas;
+    game.ctx = game.canvas.getContext("2d");
 
-    checkers.currentState = INITIAL;
+    game.currentState = INITIAL;
 }
 
-Checkers.prototype.start = function () {
-    var checkers = this;
+Game.prototype.start = function () {
+    var game = this;
 
     window.requestAnimationFrame(function () {
-        checkers.run();
+        game.run();
     });
 
 
 };
 
-Checkers.prototype.run = function () {
-    var checkers = this;
+Game.prototype.run = function () {
+    var game = this;
 
-    switch (checkers.currentState) {
+    switch (game.currentState) {
         case INITIAL:
-            checkers.drawInitialScreen();
+            game.drawInitialScreen();
             break;
         case GAME_OVER:
-            checkers.drawGameOverScreen();
+            game.drawGameOverScreen();
             break;
     }
 };
 
-Checkers.prototype.drawInitialScreen = function () {
-    var checkers = this;
-    var board = new Board(checkers.canvas);
+Game.prototype.drawInitialScreen = function () {
+    var game = this;
+    var board = new Board(game.canvas);
     board.draw();
+
+    var player1 = new Player("#ffffff", board, game.canvas);
+    player1.initCheckers();
+    console.log(player1.checkers);
+
+    for(var i = 0; i < player1.checkers.length; i++){
+        player1.checkers[i].draw();
+    }
+
+
+    var player2 = new Player("#000000", board, game.canvas);
 };
 
-Checkers.prototype.drawGameOverScreen = function () {
-    var checkers = this;
+Game.prototype.drawGameOverScreen = function () {
+    var game = this;
 };
 
 

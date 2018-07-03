@@ -14,7 +14,6 @@ function Board(canvas) {
 
 Board.prototype.draw = function () {
     var board = this;
-
     for(var i = 0; i < board.cells; i++){
         for(var j = 0; j < board.rows; j++){
             if((i + j) % 2 === 0){
@@ -25,5 +24,4 @@ Board.prototype.draw = function () {
             board.ctx.fillRect((j * board.cellWidth), (i * board.cellHeight), 50, 50);
         }
     }
-
 };
