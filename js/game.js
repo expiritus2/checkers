@@ -16,8 +16,6 @@ Game.prototype.start = function () {
     window.requestAnimationFrame(function () {
         game.run();
     });
-
-
 };
 
 Game.prototype.run = function () {
@@ -26,6 +24,7 @@ Game.prototype.run = function () {
     switch (game.currentState) {
         case INITIAL:
             game.drawInitialScreen();
+            game.setRules(game);
             break;
         case GAME_OVER:
             game.drawGameOverScreen();
@@ -38,19 +37,26 @@ Game.prototype.drawInitialScreen = function () {
     var board = new Board(game.canvas);
     board.draw();
 
-    var player1 = new Player("#ffffff", board, game.canvas);
-    var player2 = new Player("#000000", board, game.canvas);
-    player1.initCheckers();
-    player2.initCheckers();
+    game.player1 = new Player("#ffffff", board, game.canvas);
+    game.player2 = new Player("#000000", board, game.canvas);
+    game.player1.initCheckers();
+    game.player2.initCheckers();
 
-    for (var i = 0; i < player1.checkers.length; i++) {
-        player1.checkers[i].draw();
-        player2.checkers[i].draw();
+    for (var i = 0; i < game.player1.checkers.length; i++) {
+        game.player1.checkers[i].draw();
+        game.player2.checkers[i].draw();
     }
+
+    game.currentPlayer = game.player1;
 };
 
 Game.prototype.drawGameOverScreen = function () {
     var game = this;
+};
+
+Game.prototype.setRules = function (game) {
+    var rules = new Rules(game);
+    rules.setRules();
 };
 
 

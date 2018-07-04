@@ -15,22 +15,37 @@ function Checker(color, x, y, boardCellWidth, canvas) {
 Checker.prototype.draw = function () {
     var checker = this;
     var radian = Math.PI / 180;
+    var ctx = checker.ctx;
 
-    checker.ctx.beginPath();
-    checker.ctx.strokeStyle = '#C6885F';
-    checker.ctx.fillStyle = checker.color;
-    checker.ctx.arc((checker.x + checker.radius + checker.smaller), (checker.y + checker.radius + checker.smaller), checker.radius, radian, 360 * radian, false);
-    checker.ctx.lineWidth = 5;
-    checker.ctx.stroke();
-    checker.ctx.fill();
+    checker.canvas.style.cursor = 'pointer';
+    ctx.beginPath();
+    ctx.strokeStyle = '#C6885F';
+    ctx.fillStyle = checker.color;
+    ctx.shadowColor = 'rgba(0, 0, 0, .5)';
+    ctx.shadowOffsetX = -3;
+    ctx.shadowOffsetY = 3;
+    ctx.shadowBlur = 3;
+    ctx.arc((checker.x + checker.radius + checker.smaller), (checker.y + checker.radius + checker.smaller), checker.radius, radian, 360 * radian, false);
+    ctx.lineWidth = 5;
+    ctx.stroke();
+    ctx.fill();
 
-    checker.ctx.beginPath();
-    checker.ctx.arc((checker.x + checker.radius + checker.smaller), (checker.y + checker.radius + checker.smaller), checker.radius / 1.3, radian, 360 * radian, false);
-    checker.ctx.lineWidth = 3;
-    checker.ctx.stroke();
+    ctx.beginPath();
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.shadowBlur = 0;
+    ctx.arc((checker.x + checker.radius + checker.smaller), (checker.y + checker.radius + checker.smaller), checker.radius / 1.3, radian, 360 * radian, false);
+    ctx.lineWidth = 3;
+    ctx.stroke();
 
-    checker.ctx.beginPath();
-    checker.ctx.arc((checker.x + checker.radius + checker.smaller), (checker.y + checker.radius + checker.smaller), checker.radius / 2, radian, 360 * radian, false);
-    checker.ctx.lineWidth = 2;
-    checker.ctx.stroke();
+    ctx.beginPath();
+    ctx.arc((checker.x + checker.radius + checker.smaller), (checker.y + checker.radius + checker.smaller), checker.radius / 2, radian, 360 * radian, false);
+    ctx.lineWidth = 2;
+    ctx.stroke();
+};
+
+Checker.prototype.move = function (x, y) {
+    var checker = this;
+    checker.x = x;
+    checker.y = y;
 };
