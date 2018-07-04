@@ -39,15 +39,14 @@ Game.prototype.drawInitialScreen = function () {
     board.draw();
 
     var player1 = new Player("#ffffff", board, game.canvas);
-    player1.initCheckers();
-    console.log(player1.checkers);
-
-    for(var i = 0; i < player1.checkers.length; i++){
-        player1.checkers[i].draw();
-    }
-
-
     var player2 = new Player("#000000", board, game.canvas);
+    player1.initCheckers();
+    player2.initCheckers();
+
+    for (var i = 0; i < player1.checkers.length; i++) {
+        player1.checkers[i].draw();
+        player2.checkers[i].draw();
+    }
 };
 
 Game.prototype.drawGameOverScreen = function () {

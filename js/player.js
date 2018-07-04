@@ -1,10 +1,9 @@
 function Player(color, board, canvas) {
     var player = this;
+
     player.color = color;
     player.canvas = canvas;
     player.board = board;
-
-    player.countCheckers = 12;
     player.checkers = [];
 }
 
@@ -13,12 +12,17 @@ Player.prototype.initCheckers = function () {
 
     for (var i = 0; i < player.board.cells; i++) {
         for (var j = 0; j < player.board.rows; j++) {
-            if((i + j) % 2 !== 0 && i < 3){
-                if (player.color === '#ffffff') {
-                    var checker = new Checker(player.color, (j * player.board.cellWidth), (i * player.board.cellHeight), player.board.cellWidth, player.canvas);
-                    player.checkers.push(checker);
-                } else {
+            var color = player.color;
+            var x = (j * player.board.cellWidth);
+            var y = (i * player.board.cellHeight);
+            var cellWidth = player.board.cellWidth;
+            var canvas = player.canvas;
 
+            if ((i + j) % 2 !== 0) {
+                if (color === '#ffffff' && i < 3) {
+                    player.checkers.push(new Checker(color, x, y, cellWidth, canvas));
+                } else if (color === '#000000' && i > 4) {
+                    player.checkers.push(new Checker(color, x, y, cellWidth, canvas));
                 }
             }
         }
