@@ -13,5 +13,6 @@ Rules.prototype.bindEvents = function () {
     var canvas = rules.game.canvas;
     canvas.addEventListener('click', function (event) {
         console.log(event);
+
     })
 };
