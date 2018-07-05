@@ -10,8 +10,8 @@ Rules.prototype.setRules = function () {
 
 Rules.prototype.bindEvents = function () {
     var rules = this;
-    var canvas = rules.game.canvas;
-    canvas.addEventListener('click', function (event) {
+    var baseElement = rules.game.baseElement;
+    baseElement.addEventListener('click', function (event) {
         console.log(event);
 
     })

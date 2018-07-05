@@ -1,10 +1,6 @@
-function Board(canvas) {
+function Board(baseElement) {
     var board = this;
-    board.canvas = canvas;
-    board.ctx = this.canvas.getContext('2d');
-
-    board.darkColor = "#671A19";
-    board.ligthColor = "#E9C394";
+    board.baseElement = baseElement;
 
     board.cells = 8;
     board.rows = 8;
@@ -14,14 +10,18 @@ function Board(canvas) {
 
 Board.prototype.draw = function () {
     var board = this;
+    var fragment = document.createDocumentFragment();
     for(var i = 0; i < board.cells; i++){
         for(var j = 0; j < board.rows; j++){
+            var cell = document.createElement('div');
+            cell.classList.add('board-cell');
             if((i + j) % 2 === 0){
-                board.ctx.fillStyle = board.ligthColor;
+                cell.classList.add('light-cell');
             } else {
-                board.ctx.fillStyle = board.darkColor;
+                cell.classList.add('dark-cell');
             }
-            board.ctx.fillRect((j * board.cellWidth), (i * board.cellHeight), 50, 50);
+            fragment.appendChild(cell);
         }
     }
+    board.baseElement.appendChild(fragment);
 };

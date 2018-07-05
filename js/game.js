@@ -1,11 +1,10 @@
 var INITIAL = 1;
 var GAME_OVER = 2;
 
-function Game(canvas) {
+function Game(baseElement) {
     var game = this;
 
-    game.canvas = canvas;
-    game.ctx = game.canvas.getContext("2d");
+    game.baseElement = baseElement;
 
     game.currentState = INITIAL;
 }
@@ -34,11 +33,11 @@ Game.prototype.run = function () {
 
 Game.prototype.drawInitialScreen = function () {
     var game = this;
-    var board = new Board(game.canvas);
-    board.draw();
+    game.board = new Board(game.baseElement);
+    game.board.draw();
 
-    game.player1 = new Player("#ffffff", board, game.canvas);
-    game.player2 = new Player("#000000", board, game.canvas);
+    game.player1 = new Player("#ffffff", game.board, game.baseElement);
+    game.player2 = new Player("#000000", game.board, game.baseElement);
     game.player1.initCheckers();
     game.player2.initCheckers();
 
