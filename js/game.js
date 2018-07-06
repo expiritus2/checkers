@@ -1,37 +1,17 @@
-var INITIAL = 1;
-var GAME_OVER = 2;
-
 function Game(baseElement) {
     var game = this;
 
     game.baseElement = baseElement;
-
-    game.currentState = INITIAL;
 }
 
 Game.prototype.start = function () {
     var game = this;
 
-    window.requestAnimationFrame(function () {
-        game.run();
-    });
+    game.drawBoard();
+    game.setRules(game);
 };
 
-Game.prototype.run = function () {
-    var game = this;
-
-    switch (game.currentState) {
-        case INITIAL:
-            game.drawInitialScreen();
-            game.setRules(game);
-            break;
-        case GAME_OVER:
-            game.drawGameOverScreen();
-            break;
-    }
-};
-
-Game.prototype.drawInitialScreen = function () {
+Game.prototype.drawBoard = function () {
     var game = this;
     game.board = new Board(game.baseElement);
     game.board.draw();
@@ -45,12 +25,6 @@ Game.prototype.drawInitialScreen = function () {
         game.player1.checkers[i].draw();
         game.player2.checkers[i].draw();
     }
-
-    game.currentPlayer = game.player1;
-};
-
-Game.prototype.drawGameOverScreen = function () {
-    var game = this;
 };
 
 Game.prototype.setRules = function (game) {

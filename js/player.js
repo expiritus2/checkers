@@ -18,10 +18,10 @@ Player.prototype.initCheckers = function () {
 
 
     for (var i = 0; i < darkSells.length; i++) {
-        if (color === '#ffffff' && i < 12) {
-            player.checkers.push(new Checker(color, darkSells[i]));
-        } else if (color === '#000000' && i > 19) {
-            player.checkers.push(new Checker(color, darkSells[i]));
+        if (color === '#000000' && i < 12) {
+            player.checkers.push(new Checker(color, darkSells[i], player.checkers.length, 2));
+        } else if (color === '#ffffff' && i > 19) {
+            player.checkers.push(new Checker(color, darkSells[i], player.checkers.length, 1));
         }
     }
 };
