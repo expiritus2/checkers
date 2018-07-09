@@ -63,7 +63,6 @@ Rules.prototype.checkerScope = function (checker, cell) {
     var rules = this;
 
     var isScope = false;
-    console.log(checker);
 
     var checkerPos = {
         x: checker.clientX - checker.layerX,
@@ -76,8 +75,8 @@ Rules.prototype.checkerScope = function (checker, cell) {
     };
 
     var isDarkCell = cell.target.classList.contains('dark-cell');
-    var isNextScopeCellY = checkerPos.y - cellPos.y;
-    var isNextScopeCell = rules.playerDirection(isNextScopeCellY);
+    var nextScopeCellY = checkerPos.y - cellPos.y;
+    var isNextScopeCell = rules.playerDirection(nextScopeCellY);
 
     if (isDarkCell && isNextScopeCell) {
         isScope = true;
