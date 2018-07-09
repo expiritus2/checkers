@@ -88,11 +88,7 @@ Rules.prototype.checkerScope = function (checker, cell) {
 Rules.prototype.playerDirection = function (nextScopeCell) {
     var rules = this;
 
-    var direction = false;
-    if (rules.players[rules.currentPlayer].playerNumber === 1) {
-        direction = nextScopeCell > 0
-    } else {
-        direction = nextScopeCell < 0;
-    }
-    return direction;
+    return rules.players[rules.currentPlayer].playerNumber === 1
+        ? nextScopeCell > 0
+        : nextScopeCell < 0;
 };
