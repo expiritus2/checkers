@@ -42,6 +42,11 @@ body{
     position: relative;
     cursor: pointer;
     box-shadow: -2px 2px 7px rgba(0, 0, 0, .5);
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -ms-transition: all .3s;
+    -o-transition: all .3s;
+    transition: all .3s;
 }
 
 .checker:before {

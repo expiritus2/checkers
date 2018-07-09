@@ -1,10 +1,11 @@
-function Player(color, board, baseElement) {
+function Player(color, board, baseElement, playerNumber) {
     var player = this;
 
     player.color = color;
     player.baseElement = baseElement;
     player.board = board;
     player.checkers = [];
+    player.playerNumber = playerNumber;
 }
 
 Player.prototype.initCheckers = function () {

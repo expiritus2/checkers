@@ -16,43 +16,84 @@ Rules.prototype.bindEvents = function () {
     var baseElement = rules.game.baseElement;
 
     baseElement.addEventListener('click', function (event) {
-        rules.selectChecker(event.target);
-        rules.moveChecker(event.target);
+        rules.selectChecker(event);
+        rules.moveChecker(event);
     });
 };
 
-Rules.prototype.selectChecker = function (target) {
+Rules.prototype.selectChecker = function (event) {
     var rules = this;
-
+    var target = event.target;
     var player = target.dataset.player - 1;
     if (player === rules.currentPlayer) {
-        rules.downChacker(rules.prevChecker);
+        if (rules.prevChecker) {
+            rules.downChecker(rules.prevChecker.target);
+        }
 
         target.style.transform = 'scale(1.05)';
         target.style.boxShadow = '-5px 5px 13px rgba(0, 0, 0, .5)';
 
-        rules.prevChecker = target;
+        rules.prevChecker = event;
     }
 };
 
-Rules.prototype.moveChecker = function (target) {
+Rules.prototype.moveChecker = function (event) {
     var rules = this;
-
-    if (target.classList.contains('dark-cell')) {
-        if(rules.prevChecker){
-            target.appendChild(rules.prevChecker);
-            rules.downChacker(rules.prevChecker);
-            rules.currentPlayer = +!rules.currentPlayer;
-            rules.prevChecker = null;
-        }
+    var target = event.target;
+    if (rules.prevChecker && rules.checkerScope(rules.prevChecker, event)) {
+        target.appendChild(rules.prevChecker.target);
+        rules.downChecker(rules.prevChecker.target);
+        rules.currentPlayer = +!rules.currentPlayer;
+        rules.prevChecker = null;
     }
 };
 
-Rules.prototype.downChacker = function (target) {
+Rules.prototype.downChecker = function (target) {
     var rules = this;
 
     if (target) {
-        target.style.boxShadow = 'initial';
-        target.style.transform = 'initial';
+        target.style.transform = 'scale(1.05)';
+        setTimeout(function () {
+            target.style.boxShadow = 'initial';
+        }, 100)
     }
+};
+
+Rules.prototype.checkerScope = function (checker, cell) {
+    var rules = this;
+
+    var isScope = false;
+    console.log(checker);
+
+    var checkerPos = {
+        x: checker.clientX - checker.layerX,
+        y: checker.clientY - checker.layerY
+    };
+
+    var cellPos = {
+        x: cell.clientX - cell.offsetX,
+        y: cell.clientY - cell.offsetY
+    };
+
+    var isDarkCell = cell.target.classList.contains('dark-cell');
+    var isNextScopeCellY = checkerPos.y - cellPos.y;
+    var isNextScopeCell = rules.playerDirection(isNextScopeCellY);
+
+    if (isDarkCell && isNextScopeCell) {
+        isScope = true;
+    }
+
+    return isScope;
+};
+
+Rules.prototype.playerDirection = function (nextScopeCell) {
+    var rules = this;
+
+    var direction = false;
+    if (rules.players[rules.currentPlayer].playerNumber === 1) {
+        direction = nextScopeCell > 0
+    } else {
+        direction = nextScopeCell < 0;
+    }
+    return direction;
 };

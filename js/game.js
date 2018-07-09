@@ -16,8 +16,8 @@ Game.prototype.drawBoard = function () {
     game.board = new Board(game.baseElement);
     game.board.draw();
 
-    game.player1 = new Player("#ffffff", game.board, game.baseElement);
-    game.player2 = new Player("#000000", game.board, game.baseElement);
+    game.player1 = new Player("#ffffff", game.board, game.baseElement, 1);
+    game.player2 = new Player("#000000", game.board, game.baseElement, 2);
     game.player1.initCheckers();
     game.player2.initCheckers();
 
