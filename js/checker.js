@@ -6,6 +6,7 @@ function Checker(color, boardCell, index, player) {
     checker.index = index;
     checker.player = player;
     checker.color = color;
+    checker.alive = true;
 }
 
 Checker.prototype.draw = function () {
