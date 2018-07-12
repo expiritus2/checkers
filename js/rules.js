@@ -3,7 +3,7 @@ function Rules(game) {
     rules.game = game;
     rules.players = [rules.game.player1, rules.game.player2];
     rules.currentPlayer = 0;
-    rules.prevChecker = null;
+    rules.checkerEvent = null;
 }
 
 Rules.prototype.setRules = function () {
@@ -23,29 +23,29 @@ Rules.prototype.bindEvents = function () {
 
 Rules.prototype.selectChecker = function (event) {
     var rules = this;
-    var target = event.target;
-    var player = target.dataset.player - 1;
+    rules.targetChecker = event.target;
+    var player = rules.targetChecker.dataset.player - 1;
     if (player === rules.currentPlayer) {
-        if (rules.prevChecker) {
-            rules.downChecker(rules.prevChecker.target);
+        if (rules.checkerEvent) {
+            rules.downChecker(rules.checkerEvent.target);
         }
 
-        target.style.transform = 'scale(1.05)';
-        target.style.boxShadow = '-5px 5px 13px rgba(0, 0, 0, .5)';
+        rules.targetChecker.style.transform = 'scale(1.05)';
+        rules.targetChecker.style.boxShadow = '-5px 5px 13px rgba(0, 0, 0, .5)';
 
-        rules.prevChecker = event;
+        rules.checkerEvent = event;
     }
 };
 
 Rules.prototype.moveChecker = function (event) {
     var rules = this;
     var target = event.target;
-    if (rules.prevChecker && rules.checkerScope(rules.prevChecker, event)) {
-        target.appendChild(rules.prevChecker.target);
-        rules.downChecker(rules.prevChecker.target);
+    if (rules.checkerEvent && rules.checkerScope(rules.checkerEvent, event)) {
+        target.appendChild(rules.checkerEvent.target);
+        rules.downChecker(rules.checkerEvent.target);
 
         rules.currentPlayer = +!rules.currentPlayer;
-        rules.prevChecker = null;
+        rules.checkerEvent = null;
     }
 };
 
@@ -57,7 +57,7 @@ Rules.prototype.downChecker = function (target) {
         if (target.style.boxShadow !== 'initial') {
             setTimeout(function () {
                 target.style.boxShadow = 'initial';
-                rules.prevChecker = null;
+                rules.checkerEvent = null;
             }, 100);
         }
     }
@@ -66,62 +66,66 @@ Rules.prototype.downChecker = function (target) {
 Rules.prototype.checkerScope = function (checkerEvent, cellEvent) {
     var rules = this;
 
-    var isScope = false;
-
-    var checkerPos = {
+    rules.checkerPos = {
         x: checkerEvent.clientX - checkerEvent.layerX,
         y: checkerEvent.clientY - checkerEvent.layerY
     };
 
-    var cellPos = {
+    rules.cellPos = {
         x: cellEvent.clientX - cellEvent.offsetX,
         y: cellEvent.clientY - cellEvent.offsetY
     };
 
     var isDarkCell = cellEvent.target.classList.contains('dark-cell');
-    var isPlayerDirection = rules.playerDirection(checkerPos, cellPos, checkerEvent);
+    var isPlayerDirection = rules.playerDirection(rules.checkerPos, rules.cellPos, checkerEvent);
 
-    if (isDarkCell && isPlayerDirection) {
-        isScope = true;
-    }
-
-    return isScope;
+    return isDarkCell && isPlayerDirection;
 };
 
 Rules.prototype.playerDirection = function (checkerPos, cellPos, checkerEvent) {
     var rules = this;
 
+    var exploreResults = rules.exploreNextCells(checkerPos, cellPos, checkerEvent);
+
+    return exploreResults.rightDirection || exploreResults.directionForBeating;
+};
+
+Rules.prototype.exploreNextCells = function(checkerPos, cellPos, checkerEvent){
+    var rules = this;
+
     var rightDirection = false;
     var directionForBeating = false;
+    var transitCell;
 
     var directionY = checkerPos.y - cellPos.y;
-    var isCheckrInCell = document.elementFromPoint(cellPos.x, cellPos.y).children.length;
-
-    var transitCell;
+    var isCheckerInCell = document.elementFromPoint(cellPos.x, cellPos.y).children.length;
     if (rules.players[rules.currentPlayer].playerNumber === 1) {
-        if (directionY > 0 && directionY <= 50 && !isCheckrInCell) {
+        if (directionY > 0 && directionY <= 50 && !isCheckerInCell) {
             rightDirection = true;
-        } else if (directionY > 50 && directionY <= 100 && !isCheckrInCell) {
+        } else if (directionY > 50 && directionY <= 100 && !isCheckerInCell) {
             transitCell = rules.getTransitionCell(checkerPos, cellPos);
             directionForBeating = rules.beatChecker(transitCell);
-        } else if (directionY < 0 && directionY >= -100 && !isCheckrInCell) {
+        } else if (directionY < 0 && directionY >= -100 && !isCheckerInCell) {
             transitCell = rules.getTransitionCell(checkerPos, cellPos);
             directionForBeating = rules.beatChecker(transitCell);
         }
 
     } else {
-        if (directionY < 0 && directionY >= -50 && !isCheckrInCell) {
+        if (directionY < 0 && directionY >= -50 && !isCheckerInCell) {
             rightDirection = true;
-        } else if (directionY < -50 && directionY >= -100 && !isCheckrInCell) {
+        } else if (directionY < -50 && directionY >= -100 && !isCheckerInCell) {
             transitCell = rules.getTransitionCell(checkerPos, cellPos);
             directionForBeating = rules.beatChecker(transitCell);
-        } else if (directionY > 0 && directionY <= 100 && !isCheckrInCell) {
+        } else if (directionY > 0 && directionY <= 100 && !isCheckerInCell) {
             transitCell = rules.getTransitionCell(checkerPos, cellPos);
             directionForBeating = rules.beatChecker(transitCell);
         }
     }
 
-    return rightDirection || directionForBeating;
+    return {
+        rightDirection: rightDirection,
+        directionForBeating: directionForBeating
+    }
 };
 
 Rules.prototype.getTransitionCell = function (checkerPos, cellPos) {
