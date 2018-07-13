@@ -39,9 +39,10 @@ Rules.prototype.selectChecker = function (event) {
 
 Rules.prototype.moveChecker = function (event) {
     var rules = this;
-    var target = event.target;
-    if (rules.checkerEvent && rules.checkerScope(rules.checkerEvent, event)) {
-        target.appendChild(rules.checkerEvent.target);
+
+    rules.stepEvent = event;
+    if (rules.checkerEvent && rules.checkerScope(rules.checkerEvent, rules.stepEvent)) {
+        rules.stepEvent.target.appendChild(rules.checkerEvent.target);
         rules.downChecker(rules.checkerEvent.target);
 
         rules.currentPlayer = +!rules.currentPlayer;
@@ -100,25 +101,25 @@ Rules.prototype.exploreNextCells = function(checkerPos, cellPos, checkerEvent){
     var directionY = checkerPos.y - cellPos.y;
     var isCheckerInCell = document.elementFromPoint(cellPos.x, cellPos.y).children.length;
     if (rules.players[rules.currentPlayer].playerNumber === 1) {
-        if (directionY > 0 && directionY <= 50 && !isCheckerInCell) {
+        if (directionY > 5 && directionY <= 55 && !isCheckerInCell) {
             rightDirection = true;
-        } else if (directionY > 50 && directionY <= 100 && !isCheckerInCell) {
+        } else if (directionY > 55 && directionY <= 105 && !isCheckerInCell) {
             transitCell = rules.getTransitionCell(checkerPos, cellPos);
-            directionForBeating = rules.beatChecker(transitCell);
-        } else if (directionY < 0 && directionY >= -100 && !isCheckerInCell) {
+            directionForBeating = rules.beatChecker(transitCell, checkerPos);
+        } else if (directionY < 5 && directionY >= -105 && !isCheckerInCell) {
             transitCell = rules.getTransitionCell(checkerPos, cellPos);
-            directionForBeating = rules.beatChecker(transitCell);
+            directionForBeating = rules.beatChecker(transitCell, checkerPos);
         }
 
     } else {
-        if (directionY < 0 && directionY >= -50 && !isCheckerInCell) {
+        if (directionY < 5 && directionY >= -55 && !isCheckerInCell) {
             rightDirection = true;
-        } else if (directionY < -50 && directionY >= -100 && !isCheckerInCell) {
+        } else if (directionY < -55 && directionY >= -105 && !isCheckerInCell) {
             transitCell = rules.getTransitionCell(checkerPos, cellPos);
-            directionForBeating = rules.beatChecker(transitCell);
-        } else if (directionY > 0 && directionY <= 100 && !isCheckerInCell) {
+            directionForBeating = rules.beatChecker(transitCell, checkerPos);
+        } else if (directionY > 5 && directionY <= 105 && !isCheckerInCell) {
             transitCell = rules.getTransitionCell(checkerPos, cellPos);
-            directionForBeating = rules.beatChecker(transitCell);
+            directionForBeating = rules.beatChecker(transitCell, checkerPos);
         }
     }
 
@@ -136,16 +137,60 @@ Rules.prototype.getTransitionCell = function (checkerPos, cellPos) {
     return document.elementFromPoint(transitCellX, transitCellY);
 };
 
-Rules.prototype.beatChecker = function (transitCell) {
+Rules.prototype.beatChecker = function (transitCell, checkerPos) {
     var rules = this;
 
     var checkerInCell = transitCell.children;
+
     if (checkerInCell.length) {
         var checkerIndex = checkerInCell[0].dataset.index;
-        rules.players[+!rules.currentPlayer].checkers[checkerIndex].alive = false;
+        var playerChecker = checkerInCell[0].dataset.player;
 
-        checkerInCell[0].remove();
-        return true;
+        rules.isNextBeat();
+
+
+        if(+playerChecker === rules.players[+!rules.currentPlayer].playerNumber){
+            rules.players[+!rules.currentPlayer].checkers[checkerIndex].alive = false;
+            checkerInCell[0].remove();
+            return true;
+        }
+
     }
     return false;
+};
+
+Rules.prototype.isNextBeat = function () {
+    var rules = this;
+
+    var cellAfterBeat = {
+        x: rules.stepEvent.clientX - rules.stepEvent.offsetX,
+        y: rules.stepEvent.clientY - rules.stepEvent.offsetY
+    };
+
+    var scopedCheckers = [
+        document.elementFromPoint(cellAfterBeat.x + 50, cellAfterBeat.y + 50),
+        document.elementFromPoint(cellAfterBeat.x - 50, cellAfterBeat.y - 50),
+        document.elementFromPoint(cellAfterBeat.x + 50, cellAfterBeat.y - 50),
+        document.elementFromPoint(cellAfterBeat.x - 50, cellAfterBeat.y + 50)
+    ];
+
+    var scopedCells = [
+        document.elementFromPoint(cellAfterBeat.x + 100, cellAfterBeat.y + 100),
+        document.elementFromPoint(cellAfterBeat.x - 100, cellAfterBeat.y - 100),
+        document.elementFromPoint(cellAfterBeat.x + 100, cellAfterBeat.y - 100),
+        document.elementFromPoint(cellAfterBeat.x - 100, cellAfterBeat.y + 100)
+    ];
+
+    setTimeout(function () {
+        var isNext = false;
+        for(var i = 0; i < scopedCheckers.length; i++){
+            if(scopedCheckers[i].children.length && !scopedCells[i].children.length) {
+                console.log(scopedCells[i]);
+                if(!isNext){
+                    isNext = true;
+                }
+            }
+        }
+    }, 0);
+
 };
