@@ -8,7 +8,7 @@ Game.prototype.start = function () {
     var game = this;
 
     game.drawBoard();
-    game.setRules(game);
+    game.applyRules(game);
 };
 
 Game.prototype.drawBoard = function () {
@@ -27,9 +27,9 @@ Game.prototype.drawBoard = function () {
     }
 };
 
-Game.prototype.setRules = function (game) {
+Game.prototype.applyRules = function (game) {
     var rules = new Rules(game);
-    rules.setRules();
+    rules.applyRules();
 };
 
 

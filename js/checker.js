@@ -18,5 +18,15 @@ Checker.prototype.draw = function () {
         checker.checkerItem.dataset.index = checker.index;
         checker.checkerItem.dataset.player = checker.player;
         checker.boardCell.appendChild(checker.checkerItem);
+        checker.setPosition();
     }
+};
+
+Checker.prototype.setPosition = function () {
+    var checker = this;
+
+    var rect = checker.checkerItem.getBoundingClientRect();
+
+    checker.x = rect.left + (rect.width / 2);
+    checker.y = rect.top + (rect.height / 2);
 };
