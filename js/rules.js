@@ -41,9 +41,9 @@ Rules.prototype.moveChecker = function (event) {
     var rules = this;
 
     rules.stepEvent = event;
-    rules.checkerScope(rules.selectEvent, rules.stepEvent, function (isDarkCell, isPlayerDirection, data) {
-        if (rules.selectEvent && isPlayerDirection && isDarkCell) {
+    rules.checkerScope(rules.selectEvent, rules.stepEvent, function (isDarkCell, isPlayerDirection) {
 
+        if (rules.selectEvent && isPlayerDirection && isDarkCell) {
             rules.stepEvent.target.appendChild(rules.selectEvent.target);
 
             rules.setNewCheckerPos();
@@ -52,6 +52,10 @@ Rules.prototype.moveChecker = function (event) {
 
             rules.currentPlayer = +!rules.currentPlayer;
             rules.selectEvent = null;
+
+            rules.caseSteps(function (data) {
+                // console.log(data);
+            })
         }
     });
 };
@@ -68,8 +72,8 @@ Rules.prototype.setNewCheckerPos = function () {
         y: rules.stepEvent.clientY - rules.stepEvent.offsetY
     };
 
-    rules.players[checkerPlayer - 1].checkers[checkerIndex].x = newPos.x;
-    rules.players[checkerPlayer - 1].checkers[checkerIndex].y = newPos.y;
+    rules.players[rules.currentPlayer].checkers[checkerIndex].x = newPos.x;
+    rules.players[rules.currentPlayer].checkers[checkerIndex].y = newPos.y;
 };
 
 Rules.prototype.downChecker = function (target) {
@@ -103,9 +107,7 @@ Rules.prototype.checkerScope = function (selectEvent, cellEvent, callback) {
         var isDarkCell = cellEvent.target.classList.contains('dark-cell');
         var isPlayerDirection = rules.playerDirection(rules.mustBeatCheckerPos, rules.cellPos, selectEvent);
 
-        rules.caseSteps(function (data) {
-            callback(isDarkCell, isPlayerDirection, data);
-        });
+        callback(isDarkCell, isPlayerDirection);
     }
 };
 
@@ -113,7 +115,17 @@ Rules.prototype.checkerScope = function (selectEvent, cellEvent, callback) {
 Rules.prototype.caseSteps = function (callback) {
     var rules = this;
 
-    var playerCheckers = rules.players[+!rules.currentPlayer].checkers;
+    var playerCheckers = rules.players[+!!rules.currentPlayer].checkers;
+
+    // var exploredCheckerPos = {
+    //     x: playerCheckers[0].x,
+    //     y: playerCheckers[0].y
+    // };
+    //
+    // rules.isNextBeat(exploredCheckerPos, function (data) {
+    //     callback && callback(data);
+    // })
+
     playerCheckers.forEach(function (checker) {
         var exploredCheckerPos = {
             x: checker.x,
@@ -121,7 +133,6 @@ Rules.prototype.caseSteps = function (callback) {
         };
 
         rules.isNextBeat(exploredCheckerPos, function (data) {
-            console.log(data);
             callback && callback(data);
         })
     });
@@ -231,35 +242,55 @@ Rules.prototype.isNextBeat = function (stepEvent, callback) {
     var cellHeight = rules.game.board.cellHeight;
 
     var scopedCheckers = [
-        document.elementFromPoint(mustBeatCheckerPos.x + cellWidth, mustBeatCheckerPos.y + cellHeight),
         document.elementFromPoint(mustBeatCheckerPos.x - cellWidth, mustBeatCheckerPos.y - cellHeight),
         document.elementFromPoint(mustBeatCheckerPos.x + cellWidth, mustBeatCheckerPos.y - cellHeight),
+        document.elementFromPoint(mustBeatCheckerPos.x + cellWidth, mustBeatCheckerPos.y + cellHeight),
         document.elementFromPoint(mustBeatCheckerPos.x - cellWidth, mustBeatCheckerPos.y + cellHeight)
     ];
 
     var scopedCells = [
-        document.elementFromPoint(mustBeatCheckerPos.x + (cellWidth * 2), mustBeatCheckerPos.y + (cellHeight * 2)),
         document.elementFromPoint(mustBeatCheckerPos.x - (cellWidth * 2), mustBeatCheckerPos.y - (cellHeight * 2)),
         document.elementFromPoint(mustBeatCheckerPos.x + (cellWidth * 2), mustBeatCheckerPos.y - (cellHeight * 2)),
+        document.elementFromPoint(mustBeatCheckerPos.x + (cellWidth * 2), mustBeatCheckerPos.y + (cellHeight * 2)),
         document.elementFromPoint(mustBeatCheckerPos.x - (cellWidth * 2), mustBeatCheckerPos.y + (cellHeight * 2))
     ];
 
 
     setTimeout(function () {
         var isNext = false;
+
         for (var i = 0; i < scopedCheckers.length; i++) {
-            var isBody = scopedCheckers[i] && scopedCheckers[i].tagName.toLocaleLowerCase() !== "body";
-            if (scopedCheckers[i] && isBody && scopedCheckers[i].children.length) {
-                if (scopedCells[i] && isBody && !scopedCells[i].children.length) {
-                    if (!isNext) {
-                        isNext = true;
-                    }
-                }
+            var isBody = scopedCheckers[i] && scopedCheckers[i].tagName.toLowerCase() === "body";
+            var isBoardCell = scopedCheckers[i] && scopedCheckers[i].classList.contains('board-cell');
+            var isGame = scopedCheckers[i] && scopedCheckers[i].id === "checkers_game";
+
+            if (scopedCheckers[i] && !isBody && !isGame) {
+                console.log(scopedCheckers[i]);
             }
         }
         callback && callback({
             isNext: isNext,
             mustBeatCheckerPos: mustBeatCheckerPos
         });
-    }, 0);
+    }, 100);
+
+    // setTimeout(function () {
+    //     var isNext = false;
+    //     for (var i = 0; i < scopedCheckers.length; i++) {
+    //         var isBody = scopedCheckers[i] && scopedCheckers[i].tagName.toLowerCase() === "body";
+    //         var isBoard = scopedCheckers[i] && scopedCheckers[i].id === "checkers_game";
+    //         var isChecker = scopedCheckers[i] && scopedCheckers[i].classList.contains("checker");
+    //         if (scopedCheckers[i] && !isBody && !isBoard && isChecker) {
+    //             if (scopedCells[i] && !isBody && !scopedCells[i].children.length) {
+    //                 isNext = true;
+    //             } else {
+    //                 isNext = false;
+    //             }
+    //         }
+    //     }
+    //     callback && callback({
+    //         isNext: isNext,
+    //         mustBeatCheckerPos: mustBeatCheckerPos
+    //     });
+    // }, 100);
 };
